@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💝 A Special Question 💝</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .hearts {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 30px;
+            animation: float 6s infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            background: white;
+            padding: 60px 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 500px;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            color: #e63946;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .question {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 40px;
+            font-weight: 500;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            position: relative;
+            min-height: 300px;
+            margin: 0 auto;
+            max-width: 500px;
+            padding: 100px 50px;
+        }
+
+        button {
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        #yesBtn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            animation: glow 2s infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4); }
+            50% { box-shadow: 0 5px 25px rgba(245, 87, 108, 0.8); }
+        }
+
+        #yesBtn:hover {
+            transform: scale(1.1);
+        }
+
+        #noBtn {
+            background: #ddd;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .message {
+            margin-top: 30px;
+            font-size: 1.1em;
+            color: #e63946;
+            font-weight: 500;
+            min-height: 30px;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .success {
+            display: none;
+            animation: celebration 1s;
+        }
+
+        @keyframes celebration {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.1) rotate(-5deg); }
+            75% { transform: scale(1.1) rotate(5deg); }
+        }
+
+        .success h2 {
+            color: #e63946;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .success p {
+            font-size: 1.2em;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="hearts" id="hearts"></div>
+    
+    <div class="container">
+        <div id="question-container">
+            <h1>💝 Hey Beautiful! 💝</h1>
+            <p class="question">Will you be my Valentine? 🌹</p>
+            
+            <div class="buttons">
+                <button id="yesBtn">Yes! 💕</button>
+                <button id="noBtn">No</button>
+            </div>
+            
+            <div class="message" id="message"></div>
+        </div>
+
+        <div class="success" id="success">
+            <h2>🎉 Yay! 🎉</h2>
+            <p>I'm so happy! You've made my day! 💕</p>
+            <p style="margin-top: 20px; font-size: 3em;">😊❤️😊</p>
+        </div>
+    </div>
+
+    <script>
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const message = document.getElementById('message');
+        const questionContainer = document.getElementById('question-container');
+        const successContainer = document.getElementById('success');
+
+        const messages = [
+            "Are you sure? 🥺",
+            "Really? But I got you flowers! 🌹",
+            "Please? Pretty please? 🙏",
+            "Come on, don't be shy! 😊",
+            "I promise to be the best Valentine! 💖",
+            "Is that a no or are you just playing hard to get? 😏",
+            "The 'Yes' button is looking lonely... 😢",
+            "I'll take you somewhere nice! 🌟",
+            "Don't make me use puppy eyes... 🐶",
+            "But we'd be so cute together! 💑",
+            "I'm not giving up! 💪",
+            "Your mouse is clearly malfunctioning... 🖱️",
+            "Just click Yes, you know you want to! 😉",
+            "The universe wants you to say yes! ✨",
+            "Okay fine, I'll just keep asking... 🔄"
+        ];
+
+        let messageIndex = 0;
+
+        // Create floating hearts
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.textContent = ['💕', '💖', '💗', '💝'][Math.floor(Math.random() * 4)];
+            heart.style.left = Math.random() * 100 + '%';
+            heart.style.animationDuration = (4 + Math.random() * 3) + 's';
+            heart.style.animationDelay = Math.random() * 2 + 's';
+            document.getElementById('hearts').appendChild(heart);
+
+            setTimeout(() => heart.remove(), 8000);
+        }
+
+        setInterval(createHeart, 300);
+
+        function moveNoButton() {
+            const container = document.querySelector('.buttons');
+            const yesRect = yesBtn.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            
+            // Calculate Yes button center relative to container
+            const yesCenterX = yesBtn.offsetLeft + yesBtn.offsetWidth / 2;
+            const yesCenterY = yesBtn.offsetTop + yesBtn.offsetHeight / 2;
+            
+            const minDistance = noBtn.offsetWidth * 3; // At least 3 button widths away
+            const maxAttempts = 50;
+            let attempt = 0;
+            let newLeft, newTop;
+            
+            while (attempt < maxAttempts) {
+                // Generate random angle for circular movement around Yes button
+                const angle = Math.random() * Math.PI * 2;
+                const radius = 120 + Math.random() * 100; // 120-220px from Yes button
+                
+                // Calculate position on circle around Yes button
+                const offsetX = Math.cos(angle) * radius;
+                const offsetY = Math.sin(angle) * radius;
+                
+                newLeft = yesCenterX + offsetX - noBtn.offsetWidth / 2;
+                newTop = yesCenterY + offsetY - noBtn.offsetHeight / 2;
+                
+                // Check if within container bounds
+                const containerWidth = container.offsetWidth;
+                const containerHeight = container.offsetHeight;
+                const padding = 20;
+                
+                if (newLeft < padding || newLeft > containerWidth - noBtn.offsetWidth - padding ||
+                    newTop < padding || newTop > containerHeight - noBtn.offsetHeight - padding) {
+                    attempt++;
+                    continue;
+                }
+                
+                // Check distance from current position (must be at least 3 button widths)
+                const currentLeft = noBtn.offsetLeft;
+                const currentTop = noBtn.offsetTop;
+                const distance = Math.sqrt(
+                    Math.pow(newLeft - currentLeft, 2) + 
+                    Math.pow(newTop - currentTop, 2)
+                );
+                
+                if (distance < minDistance) {
+                    attempt++;
+                    continue;
+                }
+                
+                // Check distance from Yes button (must not overlap)
+                const distanceFromYes = Math.sqrt(
+                    Math.pow((newLeft + noBtn.offsetWidth / 2) - yesCenterX, 2) + 
+                    Math.pow((newTop + noBtn.offsetHeight / 2) - yesCenterY, 2)
+                );
+                
+                if (distanceFromYes < (yesBtn.offsetWidth / 2 + noBtn.offsetWidth / 2 + 20)) {
+                    attempt++;
+                    continue;
+                }
+                
+                // Valid position found!
+                break;
+            }
+            
+            noBtn.style.position = 'absolute';
+            noBtn.style.left = newLeft + 'px';
+            noBtn.style.top = newTop + 'px';
+        }
+
+        noBtn.addEventListener('mouseenter', () => {
+            moveNoButton();
+
+            if (messageIndex < messages.length) {
+                message.textContent = messages[messageIndex];
+                messageIndex++;
+            } else {
+                message.textContent = messages[Math.floor(Math.random() * messages.length)];
+            }
+        });
+
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            moveNoButton();
+            message.textContent = "Nice try! 😄";
+        });
+
+        yesBtn.addEventListener('click', async () => {
+            questionContainer.style.display = 'none';
+            successContainer.style.display = 'block';
+
+            // Create celebration hearts
+            for (let i = 0; i < 30; i++) {
+                setTimeout(createHeart, i * 100);
+            }
+
+            // Send notification
+            try {
+                await fetch('https://ntfy.sh/valentine-response-2025', {
+                    method: 'POST',
+                    body: '🎉 SHE SAID YES! Your girlfriend accepted your Valentine proposal! 💕',
+                    headers: {
+                        'Title': '💝 Valentine Response',
+                        'Priority': 'high',
+                        'Tags': 'heart,tada'
+                    }
+                });
+            } catch (error) {
+                console.log('Notification sent');
+            }
+        });
+    </script>
+</body>
+</html>
